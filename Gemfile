@@ -14,5 +14,5 @@ group :integration do
   gem 'chefspec', '~> 4.3.0'
   gem 'travis-lint'
   gem 'foodcritic', '~> 4.0.0'
-  gem 'rspec-expectations', '~> 2.14.0'
+  gem 'rspec-expectations', '~> 3.0.0'
 end

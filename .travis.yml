@@ -2,8 +2,13 @@ language: ruby
 sudo: false
 cache: bundler
 rvm:
+- 2.2.3
+- 2.1.7
 - 2.0.0
 - 1.9.3
+env:
+- CHEF_VERSION=11.6.0.5
+- CHEF_VERSION=12.2.1
 before_script: bundle exec berks install
 script: bundle exec strainer test --except kitchen
 notifications:

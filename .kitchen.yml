@@ -1,29 +1,83 @@
 ---
 driver:
   name: vagrant
-  customize:
-    memory: 1024
-    cpuexecutioncap: 50
-#   natdnshostresolver1: "on"
-# network:
-# - ["forwarded_port", {guest: 8080, host: 8080}]
-# - ["forwarded_port", {guest: 8443, host: 8443, auto_correct: true}]
 
 driver_config:
-    use_vagrant_berkshelf_plugin: true
-    require_chef_omnibus: 10.32.2
+  require_chef_omnibus: true
+  customize:
+    cpus: 1
+    memory: 512
+  ssh:
+    insert_key: false
 
 provisioner:
-  name: chef_solo
+  name: chef_zero
+  always_update_cookbooks: true
 
 platforms:
-- name: centos-6.4
+- name: centos-6.8
+  run_list: ['recipe[yum-epel]','recipe[fake::create_secrets]']
   driver_config:
-    box: opscode-centos-6.4
-    box_url: https://opscode-vm-bento.s3.amazonaws.com/vagrant/opscode_centos-6.4_provisionerless.box
+    box: bento/centos-6.8
+- name: centos-7.0
+  run_list: ['recipe[yum-epel]','recipe[fake::create_secrets]']
+  driver_config:
+    box: bento/centos-7.0
+- name: rhel-6.5
+  run_list: ['recipe[yum-epel]', 'recipe[rhsm]','recipe[fake::create_secrets]']
+  attributes:
+    rhsm:
+      username: <%= ENV['RHSM_USERNAME'] %>
+      password: <%= ENV['RHSM_PASSWORD'] %>
+  driver_config:
+    box: local-rhel-6.5
+    box_url: file://<%= File.expand_path('~') %>/opscode_rhel-6.5_chef-provisionerless.box
+- name: rhel-7.0
+  run_list: ['recipe[yum-epel]', 'recipe[rhsm]','recipe[fake::create_secrets]']
+  attributes:
+    rhsm:
+      username: <%= ENV['RHSM_USERNAME'] %>
+      password: <%= ENV['RHSM_PASSWORD'] %>
+  driver_config:
+    box: local-rhel-7.0
+    box_url: file://<%= File.expand_path('~') %>/opscode_rhel-7.0_chef-provisionerless.box
+- name: ubuntu-12.04
+  run_list: ['recipe[apt]','recipe[fake::create_secrets]']
+  driver_config:
+    box: bento/ubuntu-12.04
+- name: ubuntu-14.04
+  run_list: ['recipe[apt]','recipe[fake::create_secrets]']
+  driver_config:
+    box: bento/ubuntu-14.04
 
 suites:
-  - name: primary
-    run_list:
-      - recipe["skeleton"]
-    attributes:
+- name: default
+  run_list: ['recipe[rs-base::default]']
+  attributes:
+    cloud:
+      provider: vagrant
+    rs-base:
+      collectd_server: sketchy1-66.rightscale.com
+- name: swap
+  run_list: ['recipe[rs-base::swap]']
+  attributes:
+    rs-base:
+      collectd_server: sketchy1-66.rightscale.com
+- name: ntp
+  run_list: ['recipe[rs-base::ntp]']
+  attributes : {}
+- name: rsyslog_local
+  run_list: ['recipe[rs-base::rsyslog]']
+  attributes: {}
+- name: rsyslog_remote
+  run_list: ['recipe[rs-base::rsyslog]']
+  attributes:
+    rs-base:
+      rsyslog_server: 192.168.0.1
+- name: collectd
+  run_list: ['recipe[fake::rightscale_software]', 'recipe[fake::tcpdump]', 'recipe[rs-base::collectd]']
+  attributes:
+    cloud:
+      provider: vagrant
+    rs-base:
+      collectd_server: sketchy1-66.rightscale.com

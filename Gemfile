@@ -1,12 +1,5 @@
 source 'https://rubygems.org'
 
-gem 'berkshelf','~> 2'
-gem 'thor-foodcritic'
-
-group :dev do
-  gem 'travis', '~> 1.8.0'
-end
-
 group :integration do
   gem 'psych', '~> 2.0.13'
   gem 'test-kitchen', '~> 1.2.1'

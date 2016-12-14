@@ -7,11 +7,20 @@ Berksfile.lock
 .*.sw[a-z]
 *.un~
 /cookbooks
+cache_dir
 
 # Bundler
 Gemfile.lock
 bin/*
 .bundle/*
-.kitchen/*
 
+VERSION
+.kitchen/
 .kitchen.local.yml
+
+doc/
+.yardoc/
+berks-cookbooks/
+knife.rb
+syntaxcache/
+coverage/

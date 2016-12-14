@@ -1,7 +1,11 @@
 source 'https://rubygems.org'
 
-gem 'berkshelf'
+gem 'berkshelf','~> 2'
 gem 'thor-foodcritic'
+
+group :dev do
+  gem 'travis', '~> 1.8.0'
+end
 
 group :integration do
   gem 'psych', '~> 2.0.13'

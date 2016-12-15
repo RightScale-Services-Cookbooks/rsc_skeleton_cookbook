@@ -2,7 +2,7 @@ require 'rspec/core/rake_task'
 require 'foodcritic'
 require 'kitchen'
 
-# cookbook = File.foreach('metadata.rb').grep(/^name/).first.strip.split(' ').last.delete("'")
+cookbook = File.foreach('metadata.rb').grep(/^name/).first.strip.split(' ').last.delete("'")
 directory = File.expand_path(File.dirname(__FILE__))
 
 desc 'Sets up knife, and vendors cookbooks'
@@ -11,10 +11,52 @@ task :setup_test_environment do
     file.write <<-EOF
       log_level                :debug
       log_location             STDOUT
-      cookbook_path            ['.', 'berks-cookbooks/']
+      cookbook_path            ['.', 'berks-cookbooks/' ]
     EOF
   end
   sh('berks vendor')
+end
+
+desc 'verifies version and changelog'
+task :verify_version do
+  def get_old_version
+    f = `git show master:metadata.rb`
+    f.each_line do |line|
+      if line =~ /^version/
+        k, v = line.strip.split
+        @old_version = v
+      end
+    end
+    @old_version
+  end
+
+  def get_new_version
+    f = File.read('metadata.rb')
+    f.each_line do |line|
+      if line =~ /^version/
+        k, v = line.strip.split
+        @new_version = v
+      end
+    end
+    @new_version
+  end
+
+  if `git rev-parse --abbrev-ref HEAD`.strip != 'master'
+    old_version=get_old_version.tr('\'', '')
+    new_version=get_new_version.tr('\'', '')
+    puts "Verifying Metdata Version - Old:#{old_version}, New:#{new_version}"
+    if get_old_version == get_new_version
+      raise 'You need to increment version before test will pass'
+    end
+
+    puts "Verifying Changelog Contains Version #{new_version}"
+    counter = 0
+    f = File.read('CHANGELOG.md')
+    f.each_line do |line|
+      counter += 1 if line.match new_version
+    end
+    raise 'CHANGELOG update needed' if counter == 0
+  end
 end
 
 desc 'runs cookstyle'
@@ -55,7 +97,7 @@ task :kitchen do
 end
 
 desc 'runs all tests except kitchen'
-task except_kitchen: [:cookstyle, :foodcritic, :rspec] do
+task except_kitchen: [:verify_version, :cookstyle, :foodcritic, :rspec] do
   puts 'running all tests except kitchen'
 end
 

@@ -50,6 +50,10 @@ platforms:
   run_list: ['recipe[apt]','recipe[fake::create_secrets]']
   driver_config:
     box: bento/ubuntu-14.04
+- name: ubuntu-16.04
+  run_list: ['recipe[apt]','recipe[fake::create_secrets]']
+  driver_config:
+    box: bento/ubuntu-16.04
 
 suites:
 - name: default

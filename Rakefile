@@ -95,6 +95,13 @@ task :kitchen do
   sh(cmd)
 end
 
+desc 'clean up test files'
+task :clean do
+  cmd = 'rm -fr berks-cookbooks knife.rb'
+  puts cmd
+  sh(cmd)
+end
+
 desc 'runs all tests except kitchen'
 task except_kitchen: [:verify_version, :cookstyle, :foodcritic, :rspec] do
   puts 'running all tests except kitchen'

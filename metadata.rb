@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 name             'rsc_skeleton_cookbook'
 maintainer       'RightScale Inc'
 maintainer_email 'premium@rightscale.com'

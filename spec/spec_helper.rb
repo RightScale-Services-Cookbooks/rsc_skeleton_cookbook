@@ -1,5 +1,6 @@
+# frozen_string_literal: true
 #
-# Cookbook Name:: gluster
+# Cookbook Name:: ephemeral_lvm
 # Spec:: spec_helper
 #
 # Copyright (C) 2014 RightScale, Inc.
@@ -21,10 +22,13 @@ $LOAD_PATH.unshift(libraries_path) unless $LOAD_PATH.include?(libraries_path)
 
 require 'chefspec'
 require 'chefspec/berkshelf'
+require 'chefspec/cacher'
+require 'rspec/support'
 
-
+ChefSpec::Coverage.start!
 RSpec.configure do |config|
-  config.platform = 'centos'
-  config.version = '6.6'
+  config.extend(ChefSpec::Cacher)
+  config.platform = 'ubuntu'
+  config.version = '12.04'
   config.log_level = :error
 end
